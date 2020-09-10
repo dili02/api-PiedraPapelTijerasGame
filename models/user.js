@@ -4,7 +4,9 @@ const userModel = new Schema({
 	nickname: {
 		type: String,
 		required: true,
-		trim: true,
+      trim: true,
+      minlength: 2,
+      maxlength: 12,
 		unique: true
 	},
 	password: {
