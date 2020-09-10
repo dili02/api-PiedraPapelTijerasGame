@@ -13,25 +13,6 @@ const registerUser = async (req, res) => {
 
 		const { nickname, password, passwordCheck } = req.body
 
-		const schema = joi.object({
-			nickname: joi.string()
-				.alphanum()
-				.required(),
-			password: joi.string()
-				.alphanum()
-				.required()
-				.min(6),
-			passwordCheck: joi.string()
-				.alphanum()
-				.required()
-				.min(6)
-		})
-		const validation = schema.validate({nickname, password, passwordCheck})
-		if (validation.error) return res.status(400).json({
-			status: "error",
-			message: validation.error.message
-		})
-
 		if (password !== passwordCheck) return res.status(400).json({
 			status: "error",
 			message: "Ingrese la misma contraseña dos veces para la verificación"
@@ -43,13 +24,13 @@ const registerUser = async (req, res) => {
 			message: "Lo Siento ese nickname ya esta en uso"
 		})
 
-		const salt = await bcrypt.genSalt(2)
+		const salt = await bcrypt.genSalt()
 		const passwordHash = await bcrypt.hash(password, salt)
 
 		const newUser = new User({
 			nickname,
 			password: passwordHash
-		})
+      })
 		await newUser.save()
 
 		return res.status(201).json({
@@ -75,21 +56,6 @@ const loginUser = async (req, res) => {
 
 		const { nickname, password } = req.body
 
-		const schema = joi.object({
-			nickname: joi.string()
-				.alphanum()
-				.required(),
-			password: joi.string()
-				.alphanum()
-				.required()
-				.min(6)
-		})
-		const validation = schema.validate({ nickname, password })
-		if (validation.error) return res.status(400).json({
-			status: "error",
-			message: validation.error.message
-		})
-
 		const user = await User.findOne({ nickname })
 		if (!user) return res.status(401).json({
 			status: "error",
@@ -101,9 +67,6 @@ const loginUser = async (req, res) => {
 			status: "error",
 			message: "nickname o contraseña incorrectos"
 		})
-
-		/* const userWithoutPassword = user.toObject()
-		delete userWithoutPassword.password */
 
 		const token = jwt.sign({ id: user._id }, process.env.JWT_KEY)
 		res.status(200).json({

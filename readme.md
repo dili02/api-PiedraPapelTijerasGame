@@ -1,6 +1,6 @@
 # API (ExpressJS, MongoDB, Joi, Bcrypt, JWT)
 
-## Variables de entorno
+## Variables de entorno:
 Crear archivo `.env` con variables de entorno:
 ```
 DB_HOST=tu_DB_HOST
